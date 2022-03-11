@@ -40,7 +40,7 @@ You can override this by creating a Program object with `allow_stderr=True` argu
 When you create a program object with a language name like `language='C++'`, `programlib` retrieves an appropriate language configuration from it's database.
 If you have a different opinion on how to compile or run in this language or want to use a language that is not supported out of the box, you can create your own language configuration object:
 
-```
+```python
 from programlib import Program, Language
 language = Language(
         build_cmd='g++ {name}.cpp -o {name}',
