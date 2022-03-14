@@ -26,6 +26,7 @@ program = Program(source_code, language='C++')
 This object has
 - a `run` method that runs the program and returns a list of strings it printed to `stdout`. You can optionally provide a list of input strings as well.
 - a `score` method that takes a list of test cases. A test case is a tuple of 2 lists: the first list is the input strings, the second is the expected output strings. The method returns percentage of output strings that matched expectations.
+- a `save` method that will save the source code to a file at the specified path.
 
 See also `examples`.
 

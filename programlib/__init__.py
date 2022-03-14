@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 from uuid import uuid4
 from statistics import mean
+import shutil
 
 class Language:
     """
@@ -33,6 +34,9 @@ class Language:
     def write_source(self, workdir, name, source):
         with open(workdir / self.source.format(name=name), 'w') as f:
             f.write(source)
+
+    def copy_source(self, workdir, name, dest):
+        shutil.copy(workdir / self.source.format(name=name), dest)
 
     def cleanup(self, workdir, name):
         (workdir / self.source.format(name=name)).unlink()
@@ -178,6 +182,9 @@ class Program():
     def score(self, test_cases):
         test_results = [correctness(output_lines, self.run(input_lines)) for input_lines, output_lines in test_cases]
         return sum(test_results) / len(test_results)
+
+    def save(self, path):
+        self.language.copy_source(self.workdir, self.name, path)
 
     def __del__(self):
         self.language.cleanup(self.workdir, self.name)
