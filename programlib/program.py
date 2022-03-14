@@ -16,7 +16,9 @@ class Program():
     Program object: represents a runnable program in some programming language
     """
 
-    def __init__(self, source, name=None, language='C++', workdir=Path(__file__).parent / 'programs', allow_stderr=False):
+    def __init__(self, source, name=None, language='C++', 
+                       workdir=Path(__file__).parent / 'programs', 
+                       force_build=False):
         if isinstance(language, str):
             self.language = languages[language]
         else:
@@ -24,20 +26,40 @@ class Program():
 
         self.workdir = workdir
         self.name = name or str(uuid4())
-        self.allow_stderr = allow_stderr
         
         self.language.write_source(self.workdir, self.name, source)
-        self.language.build(self.workdir, self.name, allow_stderr=self.allow_stderr)
+        self.stdout, self.stderr = self.language.build(self.workdir, self.name, force=force_build)
+
+        assert force_build or not self.stderr, self.stderr
 
     def __lt__(self, other):
         return self.name < other.name
 
-    def run(self, input_lines=[]):
-        return self.language.run(self.workdir, self.name, input_lines, allow_stderr=self.allow_stderr)
+    def run(self, input_lines=[], force=True):
+        """
+        Run the program and capture its output
 
-    def score(self, test_cases):
-        test_results = [correctness(output_lines, self.run(input_lines)) for input_lines, output_lines in test_cases]
-        return sum(test_results) / len(test_results)
+        If 'input_lines' are specified, they will be sent to stdin.
+        After the program has finished, `run` will check for errors on stderr
+        and, in case there aren't any, return a list of output lines
+
+        Use 'force=True' to skip the error check.
+        Raw stdout and stderr data will always be stored in `program.stdout` and `program.stderr` attributes
+        """
+        
+        self.stdout, self.stderr = self.language.run(self.workdir, self.name, input_lines)
+        assert force or not self.stderr, self.stderr
+        return self.stdout.splitlines()
+
+    def score(self, test_cases, force=True):
+        test_results = []
+        for input_lines, expected_output_lines in test_cases:
+            try:
+                output_lines = self.run(input_lines, force=force)
+                test_results.append(correctness(expected_output_lines, output_lines))
+            except AssertionError:
+                test_results.append(0)
+        return mean(test_results)
 
     def save(self, path):
         self.language.copy_source(self.workdir, self.name, path)

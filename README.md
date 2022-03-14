@@ -35,8 +35,7 @@ See "Advanced usage" below for instructions on how to add other languages.
 
 ## Advanced usage
 
-By default, program execution will fail if anything is output to `stderr` at compile or run time. 
-You can override this by creating a Program object with `allow_stderr=True` argument.
+### Language configuration
 
 When you create a program object with a language name like `language='C++'`, `programlib` retrieves an appropriate language configuration from it's database.
 If you have a different opinion on how to compile or run in this language or want to use a language that is not supported out of the box, you can create your own language configuration object:
@@ -56,3 +55,12 @@ program = Program(source_code, language=language)
 `build_cmd` and `run_cmd` respectively instruct `programlib` which commands to use to compile and run the program in this language.
 `artefacts` is a list of all the files produced by `build_cmd` command.
 It is needed to clean up the artefacts when the program object is destroyed.
+
+### Error handling
+
+Any output written to `stderr` is considered an error.
+By default, any errors at build time or run time will lead to an exception being raised, with 2 exceptions:
+- `score` function that catches exceptions during test cases execution and marks these tests as failed.
+- Setting `program = Program(force_build=True)`, `program.run(force=True)` or `program.score(force=True)` will make `programlib` ignore all errors.
+
+You can check `program.stdout` and `program.stderr` to see what the program printed to `stdout` and `stderr` during the last run (or, if in was never run, during build).

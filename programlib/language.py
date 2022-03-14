@@ -12,21 +12,21 @@ class Language:
         self.source = source
         self.artefacts = artefacts
 
-    def build(self, workdir, name, allow_stderr=False):
+    def build(self, workdir, name):
         if self.build_cmd:
             completed_process = subprocess.run(self.build_cmd.format(name=name), capture_output=True, 
                                                cwd=workdir, shell=True)
-            assert allow_stderr or not completed_process.stderr, completed_process.stderr
+            return completed_process.stdout, completed_process.stderr
+        else:
+            return '', ''
 
-    def run(self, workdir, name, input_lines=[], allow_stderr=False):
+    def run(self, workdir, name, input_lines=[]):
         completed_process = subprocess.run(self.run_cmd.format(name=name), 
                                            capture_output=True, 
                                            cwd=workdir, 
                                            input='\n'.join(input_lines).encode(), 
                                            shell=True)
-        assert allow_stderr or not completed_process.stderr, completed_process.stderr
-        self.stdout, self.stderr = completed_process.stdout.decode(), completed_process.stderr.decode()
-        return self.stdout.split('\n')
+        return completed_process.stdout.decode(), completed_process.stderr.decode()
 
     def write_source(self, workdir, name, source):
         with open(workdir / self.source.format(name=name), 'w') as f:
