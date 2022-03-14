@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="programlib",
-    version="1.0.0",
+    version="1.0.1",
     description="Programs as Objects",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -22,7 +22,7 @@ setup(
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research"
+        "Intended Audience :: Science/Research",
         "Topic :: Software Development :: Compilers",
         "Programming Language :: Python :: 3",
     ],
