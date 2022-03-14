@@ -1,4 +1,3 @@
-from math import factorial
 from programlib import Program
 
 factorial_tests = [
