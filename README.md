@@ -51,7 +51,7 @@ language = Language(
 program = Program(source_code, language=language)
 ```
 
-`source` parameter describe the naming convention for the source file (usually `{name}.extension`). Make sure that this parameter contains a `{name}` placeholder, so that `programlib` can keep track of several source files at the same time.
+`source` parameter describes the naming convention for the source file (usually `{name}.extension`). Make sure that this parameter contains a `{name}` placeholder, so that `programlib` can keep track of several source files at the same time.
 `build_cmd` and `run_cmd` respectively instruct `programlib` which commands to use to compile and run the program in this language.
 `artefacts` is a list of all the files produced by `build_cmd` command.
 It is needed to clean up the artefacts when the program object is destroyed.
