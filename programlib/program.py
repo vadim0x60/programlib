@@ -28,7 +28,7 @@ class Program():
         self.name = name or str(uuid4())
         
         self.language.write_source(self.workdir, self.name, source)
-        self.stdout, self.stderr = self.language.build(self.workdir, self.name, force=force_build)
+        self.stdout, self.stderr = self.language.build(self.workdir, self.name)
 
         assert force_build or not self.stderr, self.stderr
 
