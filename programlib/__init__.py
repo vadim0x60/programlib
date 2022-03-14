@@ -156,7 +156,7 @@ class Program():
     Program object: represents a runnable program in some programming language
     """
 
-    def __init__(self, source, name=None, language='C++', workdir=Path(__name__).parent / 'programs', allow_stderr=False):
+    def __init__(self, source, name=None, language='C++', workdir=Path(__file__).parent / 'programs', allow_stderr=False):
         if isinstance(language, str):
             self.language = languages[language]
         else:
