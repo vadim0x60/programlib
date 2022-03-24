@@ -49,7 +49,7 @@ languages = {
     ),
     'Python': Language(
         build_cmd=None,
-        run_cmd='python3 {name}',
+        run_cmd='python3 {name}.py',
         source='{name}.py',
         artefacts=[]
     ),
