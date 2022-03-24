@@ -5,11 +5,16 @@ from pathlib import Path
 from programlib import languages
 
 def correctness(expected_outputs, outputs):
+    assert expected_outputs, 'expected_outputs is empty. Cannot test program correctness.'
+
     outputs = outputs[:len(expected_outputs)]
 
-    return mean(int(expected_line == actual_line) 
-                for expected_line, actual_line 
-                in zip(expected_outputs, outputs))
+    if outputs:
+        return mean(int(expected_line == actual_line) 
+                    for expected_line, actual_line 
+                    in zip(expected_outputs, outputs))
+    else:
+        return 0
 
 class Program():
     """
