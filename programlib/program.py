@@ -1,4 +1,6 @@
+from collections import namedtuple
 from statistics import mean
+from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
 
@@ -15,6 +17,9 @@ def correctness(expected_outputs, outputs):
                     in zip(expected_outputs, outputs))
     else:
         return 0
+
+TestRun = namedtuple('TestRun', ['input_lines', 'expected_output_lines', 
+                                 'output_lines', 'correctness'])
 
 class Program():
     """
@@ -57,14 +62,17 @@ class Program():
         return self.stdout.splitlines()
 
     def score(self, test_cases, force=True):
-        test_results = []
+        self.test_runs = []
         for input_lines, expected_output_lines in test_cases:
             try:
                 output_lines = self.run(input_lines, force=force)
-                test_results.append(correctness(expected_output_lines, output_lines))
+                test_run = TestRun(input_lines, expected_output_lines, 
+                                   output_lines, correctness(expected_output_lines, output_lines))          
             except AssertionError:
-                test_results.append(0)
-        return mean(test_results)
+                test_run = TestRun(input_lines, expected_output_lines, [], 0)
+
+            self.test_runs.append(test_run)
+        return mean([run.correctness for run in self.test_runs])
 
     def save(self, path):
         self.language.copy_source(self.workdir, self.name, path)
