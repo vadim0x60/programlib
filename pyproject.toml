@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "programlib"
+version = "2.1.0"
+description = "Programs as Objects"
+authors = ["Vadim Liventsev <dev@vadim.me>"]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Software Development :: Compilers"
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
