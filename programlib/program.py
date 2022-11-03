@@ -4,7 +4,7 @@ from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
 
-from programlib import languages
+from programlib import language_
 
 def correctness(expected_outputs, outputs):
     assert expected_outputs, 'expected_outputs is empty. Cannot test program correctness.'
@@ -29,10 +29,7 @@ class Program():
     def __init__(self, source, name=None, language='C++', 
                        workdir=Path(__file__).parent / 'programs', 
                        force_build=False):
-        if isinstance(language, str):
-            self.language = languages[language]
-        else:
-            self.language = language
+        self.language = language_[language]
 
         self.workdir = workdir
         self.name = name or str(uuid4())

@@ -145,8 +145,8 @@ languages = {
     )
 }
 
-def language(lang):
-    if isinstance(lang, Language):
-        return lang
+def language_(language):
+    if isinstance(language, Language):
+        return language
     else:
-        return languages[lang]
+        return languages[language]
