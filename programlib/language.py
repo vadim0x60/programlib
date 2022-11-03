@@ -144,3 +144,9 @@ languages = {
         artefacts=[]
     )
 }
+
+def language(lang):
+    if isinstance(lang, Language):
+        return lang
+    else:
+        return languages[lang]
