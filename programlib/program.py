@@ -58,7 +58,14 @@ class Program():
         assert force or not self.stderr, self.stderr
         return self.stdout.splitlines()
 
-    def score(self, test_cases, force=True):
+    def score(self, test_cases, force=True, cache=True):
+        """
+        Test the program against a list of input output pairs
+
+        If 'force=True', program outputs will be checked even if there are errors on stderr
+        If 'cache=True', all the test logs will be stored in `program.test_runs` attribute
+        """
+
         self.test_runs = []
         for input_lines, expected_output_lines in test_cases:
             try:
@@ -69,7 +76,12 @@ class Program():
                 test_run = TestRun(input_lines, expected_output_lines, [], 0)
 
             self.test_runs.append(test_run)
-        return mean([run.correctness for run in self.test_runs])
+        self.score = mean([run.correctness for run in self.test_runs])
+
+        if not cache:
+            del self.test_runs
+
+        return self.score
 
     def save(self, path):
         self.language.copy_source(self.workdir, self.name, path)
