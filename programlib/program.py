@@ -58,7 +58,7 @@ class Program():
         assert force or not self.stderr, self.stderr
         return self.stdout.splitlines()
 
-    def score(self, test_cases, force=True, cache=True):
+    def test(self, test_cases, force=True, cache=True):
         """
         Test the program against a list of input output pairs
 

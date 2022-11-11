@@ -26,7 +26,7 @@ int main() {
 """
 
 print('C++ score')
-print(Program(source=factorial_cpp, language='C++').score(factorial_tests))
+print(Program(source=factorial_cpp, language='C++').test(factorial_tests))
 
 factorial_clj = """
 (defn factorial [n] (if (< n 1) 1 (* n (factorial (- n 1)))))
@@ -34,4 +34,4 @@ factorial_clj = """
 """
 
 print('Clojure score')
-print(Program(source=factorial_clj, language='Clojure').score(factorial_tests))
+print(Program(source=factorial_clj, language='Clojure').test(factorial_tests))
