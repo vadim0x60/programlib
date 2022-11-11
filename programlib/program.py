@@ -29,7 +29,7 @@ class Program():
     def __init__(self, source, name=None, language='C++', 
                        workdir=Path(__file__).parent / 'programs', 
                        force_build=False):
-        self.language = language_[language]
+        self.language = language_(language)
 
         self.workdir = workdir
         self.name = name or str(uuid4())
