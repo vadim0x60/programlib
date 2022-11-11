@@ -32,6 +32,10 @@ class Language:
         with open(workdir / self.source.format(name=name), 'w') as f:
             f.write(source)
 
+    def read_source(self, workdir, name):
+        with open(workdir / self.source.format(name=name), 'r') as f:
+            return f.read()
+
     def copy_source(self, workdir, name, dest):
         shutil.copy(workdir / self.source.format(name=name), dest)
 

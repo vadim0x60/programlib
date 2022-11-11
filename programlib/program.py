@@ -42,6 +42,11 @@ class Program():
     def __lt__(self, other):
         return self.name < other.name
 
+    def read(self):
+        """Obtain the source code of the program"""
+
+        return self.language.read_source(self.workdir, self.name)
+
     def run(self, input_lines=[], force=True):
         """
         Run the program and capture its output
