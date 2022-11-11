@@ -27,8 +27,7 @@ class Program():
     """
 
     def __init__(self, source, name=None, language='C++', 
-                       workdir=Path(__file__).parent / 'programs', 
-                       force_build=False):
+                       workdir=Path(__file__).parent / 'programs'):
         self.language = language_(language)
 
         self.workdir = workdir
@@ -37,7 +36,8 @@ class Program():
         self.language.write_source(self.workdir, self.name, source)
         self.stdout, self.stderr = self.language.build(self.workdir, self.name)
 
-        assert force_build or not self.stderr, self.stderr
+        # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
+        self.compile_error = not not self.stderr
 
     def __lt__(self, other):
         return self.name < other.name
@@ -65,6 +65,9 @@ class Program():
         If 'force=True', program outputs will be checked even if there are errors on stderr
         If 'cache=True', all the test logs will be stored in `program.test_runs` attribute
         """
+
+        if self.compile_error:
+            return 0
 
         self.test_runs = []
         for input_lines, expected_output_lines in test_cases:
