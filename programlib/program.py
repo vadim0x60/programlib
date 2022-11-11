@@ -72,22 +72,22 @@ class Program():
         """
 
         if self.compile_error:
-            return 0
+            self.score = 0
+        else:
+            self.test_runs = []
+            for input_lines, expected_output_lines in test_cases:
+                try:
+                    output_lines = self.run(input_lines, force=force)
+                    test_run = TestRun(input_lines, expected_output_lines, 
+                                    output_lines, correctness(expected_output_lines, output_lines))          
+                except AssertionError:
+                    test_run = TestRun(input_lines, expected_output_lines, [], 0)
 
-        self.test_runs = []
-        for input_lines, expected_output_lines in test_cases:
-            try:
-                output_lines = self.run(input_lines, force=force)
-                test_run = TestRun(input_lines, expected_output_lines, 
-                                   output_lines, correctness(expected_output_lines, output_lines))          
-            except AssertionError:
-                test_run = TestRun(input_lines, expected_output_lines, [], 0)
+                self.test_runs.append(test_run)
+            self.score = mean([run.correctness for run in self.test_runs])
 
-            self.test_runs.append(test_run)
-        self.score = mean([run.correctness for run in self.test_runs])
-
-        if not cache:
-            del self.test_runs
+            if not cache:
+                del self.test_runs
 
         return self.score
 
