@@ -25,7 +25,7 @@ program = Program(source_code, language='C++')
 
 This object has
 - a `run` method that runs the program and returns a list of strings it printed to `stdout`. You can optionally provide a list of input strings as well.
-- a `score` method that takes a list of test cases. A test case is a tuple of 2 lists: the first list is the input strings, the second is the expected output strings. The method returns percentage of output strings that matched expectations.
+- a `test` method that takes a list of test cases. A test case is a tuple of 2 lists: the first list is the input strings, the second is the expected output strings. The method returns percentage of output strings that matched expectations.
 - a `save` method that will save the source code to a file at the specified path.
 
 See also `examples`.
@@ -60,7 +60,7 @@ It is needed to clean up the artefacts when the program object is destroyed.
 
 Any output written to `stderr` is considered an error.
 By default, any errors at build time or run time will lead to an exception being raised, with 2 exceptions:
-- `score` function that catches exceptions during test cases execution and marks these tests as failed.
-- Setting `program = Program(force_build=True)`, `program.run(force=True)` or `program.test(force=True)` will make `programlib` ignore all errors.
+- `test` function that catches exceptions during test cases execution and marks these tests as failed.
+- Setting `program.run(force=True)` or `program.test(force=True)` will make `programlib` ignore all errors.
 
 You can check `program.stdout` and `program.stderr` to see what the program printed to `stdout` and `stderr` during the last run (or, if in was never run, during build).
