@@ -36,9 +36,11 @@ class Language:
         shutil.copy(workdir / self.source.format(name=name), dest)
 
     def cleanup(self, workdir, name):
-        (workdir / self.source.format(name=name)).unlink()
-        for artefact in self.artefacts:
-            (workdir / artefact.format(name=name)).unlink()
+        for path in [self.source] + self.artefacts:
+            try:
+                (workdir / path.format(name=name)).unlink()
+            except FileNotFoundError:
+                pass
 
 languages = {
     'C++': Language(
