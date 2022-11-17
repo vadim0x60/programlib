@@ -1,21 +1,20 @@
 from collections import namedtuple
-from statistics import mean
+from statistics import mean, StatisticsError
 from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
+from itertools import zip_longest
 
 from programlib import language_
 
 def correctness(expected_outputs, outputs):
     assert expected_outputs, 'expected_outputs is empty. Cannot test program correctness.'
 
-    outputs = outputs[:len(expected_outputs)]
-
-    if outputs:
+    try:
         return mean(int(expected_line == actual_line) 
                     for expected_line, actual_line 
-                    in zip(expected_outputs, outputs))
-    else:
+                    in zip_longest(expected_outputs, outputs))
+    except StatisticsError:
         return 0
 
 TestRun = namedtuple('TestRun', ['input_lines', 'expected_output_lines', 
@@ -63,7 +62,7 @@ class Program():
         assert force or not self.stderr, self.stderr
         return self.stdout.splitlines()
 
-    def test(self, test_cases, force=True, cache=True):
+    def test(self, test_cases, force=True):
         """
         Test the program against a list of input output pairs
 
@@ -71,25 +70,28 @@ class Program():
         If 'cache=True', all the test logs will be stored in `program.test_runs` attribute
         """
 
-        if self.compile_error:
-            self.score = 0
-        else:
-            self.test_runs = []
-            for input_lines, expected_output_lines in test_cases:
+        test_runs = []
+
+        for input_lines, expected_output_lines in test_cases:
+            test_run = None
+
+            if not self.compile_error:
                 try:
                     output_lines = self.run(input_lines, force=force)
                     test_run = TestRun(input_lines, expected_output_lines, 
                                     output_lines, correctness(expected_output_lines, output_lines))          
                 except AssertionError:
-                    test_run = TestRun(input_lines, expected_output_lines, [], 0)
+                    pass
 
-                self.test_runs.append(test_run)
-            self.score = mean([run.correctness for run in self.test_runs])
+            if not test_run:
+                test_run = TestRun(input_lines, expected_output_lines, [], 0)
 
-            if not cache:
-                del self.test_runs
+            test_runs.append(test_run)
 
-        return self.score
+        self.avg_score = mean([run.correctness for run in test_runs])
+        self.pass_rate = mean([int(run.correctness == 1) for run in test_runs])
+
+        return test_runs
 
     def save(self, path):
         self.language.copy_source(self.workdir, self.name, path)
