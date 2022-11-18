@@ -18,7 +18,7 @@ def correctness(expected_outputs, outputs):
         return 0
 
 TestRun = namedtuple('TestRun', ['input_lines', 'expected_output_lines', 
-                                 'output_lines', 'correctness'])
+                                 'output_lines', 'error_lines', 'correctness'])
 
 class Program():
     """
@@ -79,12 +79,14 @@ class Program():
                 try:
                     output_lines = self.run(input_lines, force=force)
                     test_run = TestRun(input_lines, expected_output_lines, 
-                                    output_lines, correctness(expected_output_lines, output_lines))          
+                                       output_lines, self.stderr.splitlines(),
+                                       correctness(expected_output_lines, output_lines))          
                 except AssertionError:
                     pass
 
             if not test_run:
-                test_run = TestRun(input_lines, expected_output_lines, [], 0)
+                test_run = TestRun(input_lines, expected_output_lines, 
+                                   self.stderr.splitlines(), [], 0)
 
             test_runs.append(test_run)
 
