@@ -6,11 +6,12 @@ class Language:
     Language object: describes how programs are compiled and run in a particular language
     """
 
-    def __init__(self, build_cmd, run_cmd, source, artefacts) -> None:
+    def __init__(self, build_cmd, run_cmd, source, artefacts, name='custom') -> None:
         self.build_cmd = build_cmd
         self.run_cmd = run_cmd
         self.source = source
         self.artefacts = artefacts
+        self.name = name
 
     def build(self, workdir, name):
         if self.build_cmd:
@@ -46,108 +47,128 @@ class Language:
             except FileNotFoundError:
                 pass
 
+    def __repr__(self) -> str:
+        return self.name
+
 languages = {
     'C++': Language(
         build_cmd='g++ {name}.cpp -o {name}',
         run_cmd='./{name}',
         source='{name}.cpp',
-        artefacts=['{name}']
+        artefacts=['{name}'],
+        name='C++'
     ),
     'Python': Language(
         build_cmd=None,
         run_cmd='python3 {name}.py',
         source='{name}.py',
-        artefacts=[]
+        artefacts=[],
+        name='Python'
     ),
     'Java': Language(
         build_cmd='javac {name}.java',
         run_cmd='java {name}',
         source='{name}.java',
-        artefacts=['{name}.class']
+        artefacts=['{name}.class'],
+        name='Java'
     ),
     'Ruby': Language(
         build_cmd=None,
         run_cmd='ruby {name}.rb',
         source='{name}.rb',
-        artefacts=[]
+        artefacts=[],
+        name='Ruby'
     ),
     'Rust': Language(
         build_cmd='rustc {name}.rs',
         run_cmd='./{name}',
         source='{name}.rs',
-        artefacts=['{name}']
+        artefacts=['{name}'],
+        name='Rust'
     ),
     'Go': Language(
         build_cmd=None,
         run_cmd='go run {name}.go',
         source='{name}.go',
-        artefacts=[]
+        artefacts=[],
+        name='Go'
     ),
     'Haskell': Language(
         build_cmd=None,
         run_cmd='runhaskell {name}.hs',
         source='{name}.hs',
-        artefacts=[]
+        artefacts=[],
+        name='Haskell'
     ),
     'Scala': Language(
         build_cmd=None,
         run_cmd='scala {name}.scala',
         source='{name}.scala',
-        artefacts=[]
+        artefacts=[],
+        name='Scala'
     ),
     'Kotlin': Language(
         build_cmd='kotlinc {name}.kt',
         run_cmd='java {name}',
         source='{name}.kt',
-        artefacts=['{name}.class']
+        artefacts=['{name}.class'],
+        name='Kotlin'
     ),
     'PHP': Language(
         build_cmd=None,
         run_cmd='php {name}.php',
         source='{name}.php',
-        artefacts=[]
+        artefacts=[],
+        name='PHP'
     ),
     'C#': Language(
         build_cmd='mcs {name}.cs',
         run_cmd='mono {name}.exe',
         source='{name}.cs',
-        artefacts=['{name}.exe']
+        artefacts=['{name}.exe'],
+        name='C#'
     ),
     'Swift': Language(
         build_cmd=None,
         run_cmd='swift {name}.swift',
         source='{name}.swift',
-        artefacts=[]
+        artefacts=[],
+        name='Swift'
     ),
     'D': Language(
         build_cmd=None,
         run_cmd='dmd -of{name} {name}.d',
         source='{name}.d',
-        artefacts=['{name}.o']
+        artefacts=['{name}.o'],
+        name='D'
     ),
     'Julia': Language(
         build_cmd=None,
         run_cmd='julia {name}.jl',
         source='{name}.jl',
-        artefacts=[]
+        artefacts=[],
+        name='Julia'
     ),
     'Clojure': Language(
         build_cmd=None,
         run_cmd='clj -M {name}.clj',
         source='{name}.clj',
-        artefacts=[]
+        artefacts=[],
+        name='Clojure'
     ),
     'Elixir': Language(
         build_cmd=None,
         run_cmd='elixir {name}.ex',
         source='{name}.ex',
-        artefacts=[]
+        artefacts=[],
+        name='Elixir'
     ),
     'Erlang': Language(
         build_cmd=None,
         run_cmd='erl -noshell -s {name} main -s init stop',
         source='{name}.erl',
-        artefacts=[]
+        artefacts=[],
+        name='Erlang'
     )
 }
 
