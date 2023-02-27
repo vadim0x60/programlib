@@ -25,23 +25,27 @@ class Agent():
     Agent: represents a running program that can be interacted with
     """
 
-    def __init__(self, program, process):
+    def __init__(self, program, process, lines_per_message=1):
         self.program = program
         self.process = process
+        self.lines_per_message = lines_per_message
         
         self.program.stdout = ''
         self.program.stderr = ''
 
     def act(self, input_lines):
         input = '\n'.join(input_lines).encode()
-        stdout, stderr = self.process.communicate(input)
-        stdout = stdout.decode()
-        stderr = stderr.decode()
-        self.program.stdout += stdout
-        self.program.stderr += stderr
-        return stdout.splitlines()
+        self.process.stdin.write(input)
+        self.process.stdin.flush()
+        
+        for line_idx in range(self.lines_per_message):
+            output_line = self.process.stdout.readline()
+            output_line = output_line.decode()
+            self.program.stdout += output_line
+            yield output_line
     
     def close(self):
+        self.stderr = self.process.stderr.read().decode()
         self.process.kill()
     
     def __del__(self):
@@ -93,7 +97,7 @@ class Program():
         self.stderr = stderr.decode()
         return self.stdout.splitlines()
     
-    def start(self):
+    def start(self, lines_per_message=1):
         """
         Launch the program and get a process object to communicate with it interactively
         """
