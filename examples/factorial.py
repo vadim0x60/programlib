@@ -37,5 +37,18 @@ factorial_clj = """
 
 print('Clojure score')
 program = Program(source=factorial_clj, language='Clojure')
+print(program.test(factorial_tests))
+print(program.avg_score)
+
+factorial_py = """
+def factorial(n):
+    if n < 1:
+        return 1
+    return n * factorial(n - 1)
+print(factorial(int(input())))
+"""
+
+print('Python score')
+program = Program(source=factorial_py, language='Python')
 program.test(factorial_tests)
 print(program.avg_score)
