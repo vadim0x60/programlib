@@ -21,13 +21,18 @@ class Language:
         else:
             return '', ''
 
-    def run(self, workdir, name, input_lines=[]):
+    def run(self, workdir, name, input):
         completed_process = subprocess.run(self.run_cmd.format(name=name), 
                                            capture_output=True, 
                                            cwd=workdir, 
-                                           input='\n'.join(input_lines).encode(), 
+                                           input=input, 
                                            shell=True)
-        return completed_process.stdout.decode(), completed_process.stderr.decode()
+        return completed_process.stdout, completed_process.stderr
+    
+    def Popen(self, workdir, name):
+        return subprocess.Popen(self.run_cmd.format(name=name),
+                                cwd=workdir,
+                                shell=True)
 
     def write_source(self, workdir, name, source):
         with open(workdir / self.source.format(name=name), 'w') as f:
