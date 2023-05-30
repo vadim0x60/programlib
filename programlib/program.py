@@ -18,7 +18,7 @@ def correctness(expected_outputs, outputs):
         return 0
 
 TestRun = namedtuple('TestRun', ['input_lines', 'expected_output_lines', 
-                                 'output_lines', 'error_lines', 'correctness'])
+                                 'output_lines', 'exit_status', 'correctness'])
 
 class Agent():
     """
@@ -31,22 +31,20 @@ class Agent():
         self.lines_per_message = lines_per_message
         
         self.program.stdout = ''
-        self.program.stderr = ''
 
     def act(self, input_lines):
-        input = '\n'.join(input_lines).encode()
-        self.process.stdin.write(input)
-        self.process.stdin.flush()
+        for line in input_lines:
+            self.process.sendline(line)
         
         for line_idx in range(self.lines_per_message):
-            output_line = self.process.stdout.readline()
-            output_line = output_line.decode()
-            self.program.stdout += output_line
-            yield output_line
+            line = self.process.readline()
+            line = line.decode()
+            self.program.stdout += line
+            yield line.strip()
     
     def close(self):
-        self.stderr = self.process.stderr.read().decode()
-        self.process.kill()
+        self.process.close()
+        self.program.exitstatus = self.process.exitstatus
     
     def __del__(self):
         self.close()
@@ -64,10 +62,10 @@ class Program():
         self.name = name or str(uuid4())
         
         self.language.write_source(self.workdir, self.name, source)
-        self.stdout, self.stderr = self.language.build(self.workdir, self.name)
+        self.stdout, self.exitstatus = self.language.build(self.workdir, self.name)
 
         # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
-        self.compile_error = not not self.stderr
+        self.compile_error = not not self.exitstatus
 
     def __lt__(self, other):
         return self.name < other.name
@@ -89,20 +87,16 @@ class Program():
         Raw stdout and stderr data will always be stored in `program.stdout` and `program.stderr` attributes
         """
 
-        input = '\n'.join(input_lines).encode()
-        stdout, stderr = self.language.run(self.workdir, self.name, input)
-        assert force or not stderr, stderr
-
-        self.stdout = stdout.decode()
-        self.stderr = stderr.decode()
+        self.stdout, self.exitstatus = self.language.run(self.workdir, self.name, input_lines)
+        assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
         return self.stdout.splitlines()
     
-    def start(self, lines_per_message=1):
+    def spawn(self, lines_per_message=1):
         """
         Launch the program and get a process object to communicate with it interactively
         """
 
-        process = self.language.Popen(self.workdir, self.name)
+        process = self.language.spawn(self.workdir, self.name)
         return Agent(self, process)
 
     def test(self, test_cases, force=True):
@@ -122,14 +116,14 @@ class Program():
                 try:
                     output_lines = self.run(input_lines, force=force)
                     test_run = TestRun(input_lines, expected_output_lines, 
-                                       output_lines, self.stderr.splitlines(),
+                                       output_lines, self.exitstatus,
                                        correctness(expected_output_lines, output_lines))          
                 except AssertionError:
                     pass
 
             if not test_run:
                 test_run = TestRun(input_lines, expected_output_lines, 
-                                   self.stderr.splitlines(), [], 0)
+                                   self.exitstatus, [], 0)
 
             test_runs.append(test_run)
 

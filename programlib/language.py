@@ -1,5 +1,6 @@
-import subprocess
+import pexpect
 import shutil
+import os
 
 class Language:
     """
@@ -15,24 +16,27 @@ class Language:
 
     def build(self, workdir, name):
         if self.build_cmd:
-            completed_process = subprocess.run(self.build_cmd.format(name=name), capture_output=True, 
-                                               cwd=workdir, shell=True)
-            return completed_process.stdout, completed_process.stderr
+            os.chdir(workdir)
+            stdout, status = pexpect.run(self.build_cmd.format(name=name), 
+                                         cwd=workdir, withexitstatus=True,
+                                         echo=False)
+            return stdout.decode(), status
         else:
             return '', ''
 
-    def run(self, workdir, name, input):
-        completed_process = subprocess.run(self.run_cmd.format(name=name), 
-                                           capture_output=True, 
-                                           cwd=workdir, 
-                                           input=input, 
-                                           shell=True)
-        return completed_process.stdout, completed_process.stderr
+    def run(self, workdir, name, input_lines=[]):
+        child = self.spawn(workdir, name)
+        for line in input_lines:
+            child.sendline(line)
+        output = child.read()
+        child.close()
+        return output.decode(), child.exitstatus
     
-    def Popen(self, workdir, name):
-        return subprocess.Popen(self.run_cmd.format(name=name),
-                                cwd=workdir,
-                                shell=True)
+    def spawn(self, workdir, name):
+        os.chdir(workdir)
+        child = pexpect.spawn(self.run_cmd.format(name=name), cwd=workdir)
+        child.setecho(False)
+        return child
 
     def write_source(self, workdir, name, source):
         with open(workdir / self.source.format(name=name), 'w') as f:
