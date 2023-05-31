@@ -4,6 +4,7 @@ from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
 from itertools import zip_longest
+from programlib.agent import Agent
 
 from programlib import language_
 
@@ -19,35 +20,6 @@ def correctness(expected_outputs, outputs):
 
 TestRun = namedtuple('TestRun', ['input_lines', 'expected_output_lines', 
                                  'output_lines', 'exit_status', 'correctness'])
-
-class Agent():
-    """
-    Agent: represents a running program that can be interacted with
-    """
-
-    def __init__(self, program, process, lines_per_message=1):
-        self.program = program
-        self.process = process
-        self.lines_per_message = lines_per_message
-        
-        self.program.stdout = ''
-
-    def act(self, input_lines):
-        for line in input_lines:
-            self.process.sendline(line)
-        
-        for line_idx in range(self.lines_per_message):
-            line = self.process.readline()
-            line = line.decode()
-            self.program.stdout += line
-            yield line.strip()
-    
-    def close(self):
-        self.process.close()
-        self.program.exitstatus = self.process.exitstatus
-    
-    def __del__(self):
-        self.close()
 
 class Program():
     """
@@ -91,13 +63,13 @@ class Program():
         assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
         return self.stdout.splitlines()
     
-    def spawn(self, lines_per_message=1):
+    def spawn(self, delimiter='\n'):
         """
         Launch the program and get a process object to communicate with it interactively
         """
 
         process = self.language.spawn(self.workdir, self.name)
-        return Agent(self, process)
+        return Agent(self, process, delimiter=delimiter)
 
     def test(self, test_cases, force=True):
         """

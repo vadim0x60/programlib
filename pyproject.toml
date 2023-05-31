@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "programlib"
-version = "5.0.0"
+version = "5.1.0"
 description = "Programs as Objects"
 authors = ["Vadim Liventsev <dev@vadim.me>"]
 license = "MIT"
@@ -14,6 +14,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 pexpect = "^4.8.0"
+gym = "^0.26.2"
 
 [build-system]
 requires = ["poetry-core"]
