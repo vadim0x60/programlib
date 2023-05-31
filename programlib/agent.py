@@ -50,7 +50,10 @@ class Agent():
             try:
                 action = act_decoder(rl_env.action_space, act_str)
             except SyntaxError:
-                self.process.expect(pexpect.EOF)
+                try:
+                    self.process.expect(pexpect.EOF)
+                except pexpect.TIMEOUT:
+                    pass
                 raise ValueError(act_str + self.process.before.decode())
             rollout.append((obs, r, info, action))
             obs, r, terminated, truncated, info = rl_env.step(action)
