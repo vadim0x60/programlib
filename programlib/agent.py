@@ -12,9 +12,14 @@ def decode_action(action_space, action):
     
 def encode_obs(obs_space, obs):
     try:
-        return [str(obs.tolist())]
+        obs = obs.tolist()
     except AttributeError:
-        return [str(obs)]
+        pass
+
+    if len(obs) == 1:
+        obs = obs[0]
+
+    return [str(obs)]
 
 class Agent():
     """
