@@ -12,7 +12,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 pexpect = "^4.8.0"
 gym = "^0.26.2"
 
