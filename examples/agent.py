@@ -13,4 +13,14 @@ while True:
 
 env = gym.make('MountainCarContinuous-v0', max_episode_steps=500, render_mode='human')
 program = Program(source=mountain_car_solver, language='Python')
-print(program.spawn().test(env, render=True))
+agent = program.spawn().rl(env.action_space, env.observation_space)
+
+obs, info = env.reset()
+print(obs, info)
+terminated = False
+truncated = False
+
+while not (terminated or truncated):
+    action, _ = agent.predict(obs)
+    obs, reward, terminated, truncated, info = env.step(action)
+    print(obs, reward, info)

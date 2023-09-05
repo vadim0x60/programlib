@@ -1,0 +1,2 @@
+gym[classic_control]~=0.26
+GitPython~=3.1

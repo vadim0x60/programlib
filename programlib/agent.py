@@ -1,5 +1,5 @@
 import gym
-import pexpect
+import numpy as np
 
 def decode_action(action_space, action):
     try:
@@ -40,38 +40,8 @@ class Agent():
         self.process.expect(self.delimiter)
         return self.process.before.decode()
 
-    def test(self, rl_env, act_decoder=decode_action, obs_encoder=encode_obs, render=False):
-        obs, info = rl_env.reset()
-        terminated = False
-        truncated = False
-        r = 0
-        total_r = 0
-
-        rollout = []
-
-        while not (terminated or truncated):
-            obs_str = obs_encoder(rl_env.observation_space, obs)
-            act_str = self.act(obs_str)
-            try:
-                action = act_decoder(rl_env.action_space, act_str)
-            except SyntaxError:
-                try:
-                    self.process.expect(pexpect.EOF)
-                except pexpect.TIMEOUT:
-                    pass
-                raise ValueError(act_str + self.process.before.decode())
-            rollout.append((obs, r, info, action))
-            obs, r, terminated, truncated, info = rl_env.step(action)
-            total_r += r
-            if render:
-                rl_env.render()
-
-        rollout.append((obs, r, info, None))
-
-        self.close()
-        self.program.avg_score = total_r
-
-        return rollout
+    def rl(self, action_space, obs_space):
+        return RLAgent(self, action_space, obs_space)
     
     def close(self):
         self.process.close()
@@ -79,3 +49,43 @@ class Agent():
     
     def __del__(self):
         self.close()
+
+class RLAgent():
+    """
+    Reinforcement Learning Agent: represents a running program for control in
+    an OpenAI gym environment. Mimics the interface of a stable-baselines model.
+    """
+
+    def __init__(self, agent, action_space, obs_space) -> None:
+        self.agent = agent
+        self.action_space = action_space
+        self.obs_space = obs_space
+
+    def predict(self, obs, deterministic=True):
+        """
+        Predict what the next action should be given the current observation
+
+        The observations will be passed to stdin of the program, and the action
+        will be read from stdout.
+
+        Parameters
+        ----------
+        obs - the current observation
+        deterministic - whether to return the action or a pseudo-stochastic
+        vector of action probabilities (one-hot)
+
+        Returns (action, state) tuple
+        -------
+        action - the action to take
+        state - a reference to the process to examine the execution state
+        """
+
+        obs_str = encode_obs(self.obs_space, obs)
+        action_str = self.agent.act(obs_str)
+        action = decode_action(self.action_space, action_str)
+
+        if not deterministic:
+            actions_probs = np.zeros(self.action_space.n)
+            actions_probs[action] = 1.0
+
+        return action, self.agent.process
