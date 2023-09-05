@@ -19,7 +19,7 @@ def encode_obs(obs_space, obs):
     if len(obs) == 1:
         obs = obs[0]
 
-    return [str(obs)]
+    return [str(o) for o in obs]
 
 class Agent():
     """
