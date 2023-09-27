@@ -67,9 +67,8 @@ It is needed to clean up the artefacts when the program object is destroyed.
 
 ### Error handling
 
-Any output written to `stderr` is considered an error.
 By default, any errors at build time or run time will lead to an exception being raised, with 2 exceptions:
 - `test` function that catches exceptions during test cases execution and marks these tests as failed.
 - Setting `program.run(force=True)` or `program.test(force=True)` will make `programlib` ignore all errors.
 
-You can check `program.stdout` and `program.stderr` to see what the program printed to `stdout` and `stderr` during the last run (or, if in was never run, during build).
+You can check `program.stdout` and `program.exitstatus` to check the output during the last run (or, if in was never run, during build).

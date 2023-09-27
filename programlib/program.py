@@ -52,11 +52,11 @@ class Program():
         Run the program and capture its output
 
         If 'input_lines' are specified, they will be sent to stdin.
-        After the program has finished, `run` will check for errors on stderr
-        and, in case there aren't any, return a list of output lines
+        If exit status is non-zero, an AssertionError will be raised.
+        Otherwise, a list of output lines will be returned.
 
-        Use 'force=True' to skip the error check.
-        Raw stdout and stderr data will always be stored in `program.stdout` and `program.stderr` attributes
+        Use 'force=True' to skip the exit status check.
+        Raw results will always be stored in `program.stdout` and `program.exitstatus` attributes
         """
 
         self.stdout, self.exitstatus = self.language.run(self.workdir, self.name, input_lines)
@@ -75,7 +75,7 @@ class Program():
         """
         Test the program against a list of input output pairs
 
-        If 'force=True', program outputs will be checked even if there are errors on stderr
+        If 'force=True', program outputs will be checked even if the exit status is non-zero
         If 'cache=True', all the test logs will be stored in `program.test_runs` attribute
         """
 
@@ -95,7 +95,7 @@ class Program():
 
             if not test_run:
                 test_run = TestRun(input_lines, expected_output_lines, 
-                                   self.exitstatus, [], 0)
+                                   [], self.exitstatus, 0)
 
             test_runs.append(test_run)
 
