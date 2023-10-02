@@ -26,14 +26,15 @@ class Program():
     Program object: represents a runnable program in some programming language
     """
 
-    def __init__(self, source, name=None, language='C++', 
+    def __init__(self, source=None, name=None, language='C++', 
                        workdir=Path(__file__).parent / 'programs'):
         self.language = language_(language)
 
         self.workdir = workdir
         self.name = name or str(uuid4())
         
-        self.language.write_source(self.workdir, self.name, source)
+        if source:
+            self.language.write_source(self.workdir, self.name, source)
         self.stdout, self.exitstatus = self.language.build(self.workdir, self.name)
 
         # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
