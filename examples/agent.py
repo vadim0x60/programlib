@@ -3,8 +3,8 @@ import gym
 
 mountain_car_solver = """
 while True:
-    obs = eval(input())
-    position, velocity = obs
+    position = eval(input())
+    velocity = eval(input())
     if abs(velocity) < 0.01:
         print(-0.5 - position)
     else:
