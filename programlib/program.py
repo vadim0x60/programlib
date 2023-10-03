@@ -62,7 +62,7 @@ class Program():
 
         self.stdout, self.exitstatus = self.language.run(self.workdir, self.name, input_lines)
         assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
-        return repr(self.stdout).splitlines()
+        return self.term.emulate(self.stdout)
     
     def spawn(self, delimiter='\n'):
         """

@@ -12,7 +12,7 @@ class Terminal:
         self.screen.reset()
 
         if clean:
-            lines = (line.rstrip() for line in lines)
-            lines = (line for line in lines if line)
+            lines = [line.rstrip() for line in lines]
+            lines = [line for line in lines if line]
 
         return lines
