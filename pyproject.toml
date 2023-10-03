@@ -16,6 +16,7 @@ python = "^3.8"
 pexpect = "^4.8.0"
 gym = "^0.26.2"
 numpy = "^1.24.2"
+pyte = "^0.8.0"
 
 [build-system]
 requires = ["poetry-core"]

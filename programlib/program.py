@@ -4,9 +4,8 @@ from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
 from itertools import zip_longest
-from programlib.agent import Agent
 
-from programlib import language_
+from programlib import Agent, language_, Terminal
 
 def correctness(expected_outputs, outputs):
     assert expected_outputs, 'expected_outputs is empty. Cannot test program correctness.'
@@ -29,6 +28,7 @@ class Program():
     def __init__(self, source=None, name=None, language='C++', 
                        workdir=Path(__file__).parent / 'programs'):
         self.language = language_(language)
+        self.term = Terminal()
 
         self.workdir = workdir
         self.name = name or str(uuid4())
@@ -62,7 +62,7 @@ class Program():
 
         self.stdout, self.exitstatus = self.language.run(self.workdir, self.name, input_lines)
         assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
-        return self.stdout.splitlines()
+        return repr(self.stdout).splitlines()
     
     def spawn(self, delimiter='\n'):
         """
