@@ -1,6 +1,7 @@
 import pexpect
 import shutil
 import os
+from pathlib import Path
 
 class Language:
     """
@@ -14,45 +15,42 @@ class Language:
         self.artefacts = artefacts
         self.name = name
 
-    def build(self, workdir, name):
+    def build(self, name):
         if self.build_cmd:
-            os.chdir(workdir)
             stdout, status = pexpect.run(self.build_cmd.format(name=name), 
-                                         cwd=workdir, withexitstatus=True,
-                                         echo=False)
+                                         withexitstatus=True, echo=False)
             return stdout.decode(), status
         else:
             return '', ''
 
-    def run(self, workdir, name, input_lines=[]):
-        child = self.spawn(workdir, name)
+    def run(self, name, input_lines=[]):
+        child = self.spawn(name)
         for line in input_lines:
             child.sendline(line)
         output = child.read()
         child.close()
         return output.decode(), child.exitstatus
     
-    def spawn(self, workdir, name):
-        os.chdir(workdir)
-        child = pexpect.spawn(self.run_cmd.format(name=name), cwd=workdir)
+    def spawn(self, name):
+        child = pexpect.spawn(self.run_cmd.format(name=name))
         child.setecho(False)
         return child
 
-    def write_source(self, workdir, name, source):
-        with open(workdir / self.source.format(name=name), 'w') as f:
+    def write_source(self, name, source):
+        with open(self.source.format(name=name), 'w') as f:
             f.write(source)
 
-    def read_source(self, workdir, name):
-        with open(workdir / self.source.format(name=name), 'r') as f:
+    def read_source(self, name):
+        with open(self.source.format(name=name), 'r') as f:
             return f.read()
 
-    def copy_source(self, workdir, name, dest):
-        shutil.copy(workdir / self.source.format(name=name), dest)
+    def copy_source(self, name, dest):
+        shutil.copy(self.source.format(name=name), dest)
 
-    def cleanup(self, workdir, name):
+    def cleanup(self, name):
         for path in [self.source] + self.artefacts:
             try:
-                (workdir / path.format(name=name)).unlink()
+                Path(path.format(name=name)).unlink()
             except FileNotFoundError:
                 pass
 

@@ -4,6 +4,7 @@ from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
 from itertools import zip_longest
+from contextlib_chdir import chdir
 
 from programlib import Agent, language_, Terminal
 
@@ -51,12 +52,13 @@ class Program():
             self.workdir = Path(__file__).parent / 'programs'
             self.ephemeral = True
 
-        if source:
-            self.language.write_source(self.workdir, self.name, source)
-        else:
-            source = self.language.read_source(self.workdir, self.name)
+        with chdir(self.workdir):
+            if source:
+                self.language.write_source(self.name, source)
+            else:
+                source = self.language.read_source(self.name)
 
-        self.stdout, self.exitstatus = self.language.build(self.workdir, self.name)
+            self.stdout, self.exitstatus = self.language.build(self.name)
 
         # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
         self.compile_error = not not self.exitstatus
@@ -66,8 +68,9 @@ class Program():
 
     def read(self):
         """Obtain the source code of the program"""
-
-        return self.language.read_source(self.workdir, self.name)
+        
+        with chdir(self.workdir):
+            return self.language.read_source(self.name)
 
     def run(self, input_lines=[], force=True):
         """
@@ -81,7 +84,8 @@ class Program():
         Raw results will always be stored in `program.stdout` and `program.exitstatus` attributes
         """
 
-        self.stdout, self.exitstatus = self.language.run(self.workdir, self.name, input_lines)
+        with chdir(self.workdir):
+            self.stdout, self.exitstatus = self.language.run(self.name, input_lines)
         assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
         return self.term.emulate(self.stdout)
     
@@ -90,7 +94,8 @@ class Program():
         Launch the program and get a process object to communicate with it interactively
         """
 
-        process = self.language.spawn(self.workdir, self.name)
+        with chdir(self.workdir):
+            process = self.language.spawn(self.name)
         return Agent(self, process, delimiter=delimiter)
 
     def test(self, test_cases, force=True):
@@ -127,8 +132,12 @@ class Program():
         return test_runs
 
     def save(self, path):
-        self.language.copy_source(self.workdir, self.name, path)
+        path = Path(path).absolute()
+
+        with chdir(self.workdir):
+            self.language.copy_source(self.name, path)
 
     def __del__(self):
         if self.ephemeral:
-            self.language.cleanup(self.workdir, self.name)
+            with chdir(self.workdir):
+                self.language.cleanup(self.name)

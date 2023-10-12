@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "programlib"
-version = "7.2.0"
+version = "8.0.0"
 description = "Programs as Objects"
 authors = ["Vadim Liventsev <dev@vadim.me>"]
 license = "MIT"
@@ -17,6 +17,8 @@ pexpect = "^4.8.0"
 gym = "^0.26.2"
 numpy = "^1.24.2"
 pyte = "^0.8.0"
+contextlib-chdir = "^1.0.2"
+
 
 [build-system]
 requires = ["poetry-core"]
