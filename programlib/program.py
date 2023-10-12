@@ -23,18 +23,39 @@ TestRun = namedtuple('TestRun', ['input_lines', 'expected_output_lines',
 class Program():
     """
     Program object: represents a runnable program in some programming language
+
+    You can specify the program with its source code:
+        source: source code of the program
+    Or with a file on disk:
+        workdir: directory where the program is stored
+        name: name of the file without the extension
+        ephemeral: if True, the file will be deleted when Program is destroyed
+
+    If both specifications are set, workdir/name.ext be overwritten with the source.
+
+    Whichever specification you use, you also have to specify the language:
+        language: programming language of the program
     """
 
     def __init__(self, source=None, name=None, language='C++', 
-                       workdir=Path(__file__).parent / 'programs'):
+                       workdir=None, ephemeral=False):
         self.language = language_(language)
         self.term = Terminal()
-
-        self.workdir = workdir
+        
         self.name = name or str(uuid4())
         
+        if workdir:
+            self.workdir = Path(workdir)
+            self.ephemeral = ephemeral
+        else:
+            self.workdir = Path(__file__).parent / 'programs'
+            self.ephemeral = True
+
         if source:
             self.language.write_source(self.workdir, self.name, source)
+        else:
+            source = self.language.read_source(self.workdir, self.name)
+
         self.stdout, self.exitstatus = self.language.build(self.workdir, self.name)
 
         # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
@@ -109,4 +130,5 @@ class Program():
         self.language.copy_source(self.workdir, self.name, path)
 
     def __del__(self):
-        self.language.cleanup(self.workdir, self.name)
+        if self.ephemeral:
+            self.language.cleanup(self.workdir, self.name)
