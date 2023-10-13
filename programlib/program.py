@@ -4,7 +4,11 @@ from typing import NamedTuple
 from uuid import uuid4
 from pathlib import Path
 from itertools import zip_longest
-from contextlib_chdir import chdir
+
+try:
+    from contextlib import chdir
+except ImportError:
+    from contextlib_chdir import chdir
 
 from programlib import Agent, language_, Terminal
 

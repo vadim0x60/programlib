@@ -17,7 +17,7 @@ pexpect = "^4.8.0"
 gym = "^0.26.2"
 numpy = "^1.24.2"
 pyte = "^0.8.0"
-contextlib-chdir = "^1.0.2"
+contextlib-chdir = {version = "^1.0.2", python = "<3.11"}
 
 
 [build-system]
