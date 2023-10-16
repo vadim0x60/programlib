@@ -24,12 +24,17 @@ class Language:
             return '', ''
 
     def run(self, name, input_lines=[]):
-        child = self.spawn(name)
-        for line in input_lines:
-            child.sendline(line)
-        output = child.read()
-        child.close()
-        return output.decode(), child.exitstatus
+        try:
+            child = self.spawn(name)
+            for line in input_lines:
+                child.sendline(line)
+            output = child.read()
+            child.close()
+            return output.decode(), child.exitstatus
+        except pexpect.exceptions.TIMEOUT as e:
+            raise RuntimeError('Program did not receive expected input') from e
+        except pexpect.exceptions.EOF as e:
+            raise RuntimeError('Program exited unexpectedly') from e
     
     def spawn(self, name):
         child = pexpect.spawn(self.run_cmd.format(name=name))

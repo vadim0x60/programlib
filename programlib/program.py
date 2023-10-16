@@ -121,7 +121,7 @@ class Program():
                     test_run = TestRun(input_lines, expected_output_lines, 
                                        output_lines, self.exitstatus,
                                        correctness(expected_output_lines, output_lines))          
-                except AssertionError:
+                except (AssertionError, RuntimeError):
                     pass
 
             if not test_run:
