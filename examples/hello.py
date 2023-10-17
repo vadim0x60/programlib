@@ -33,3 +33,21 @@ tests = program.test([
 ])
 
 print(tests)
+
+hw = hw.replace('World', 'Earth')
+
+program = Program(hw, language='C++')
+tests = program.test([
+    ([], ['Hello World!'])
+])
+
+print(tests)
+
+hw = hw.replace(';', '!')
+
+program = Program(hw, language='C++')
+tests = program.test([
+    ([], ['Hello World!'])
+])
+
+print(tests)

@@ -125,8 +125,10 @@ class Program():
                     pass
 
             if not test_run:
+                # The program is not runnable
                 test_run = TestRun(input_lines, expected_output_lines, 
-                                   [], self.exitstatus, 0)
+                                   self.term.emulate(self.stdout) if self.stdout else [], 
+                                   self.exitstatus, 0)
 
             test_runs.append(test_run)
 
