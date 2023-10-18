@@ -29,13 +29,24 @@ This object has
 - a `spawn` method that launches the program in an interactive mode. It returns an `Agent` object with and `act` method that takes a sequence of input strings and returns a list of strings printed to `stdout` in response.
 - a `test` method that takes a list of test cases. A test case is a tuple of 2 lists: the first list is the input strings, the second is the expected output strings. The method returns a full log of all test runs and updates `program.avg_score` and `program.test_pass_rate` attributes.
 
-To test the program on a Reinforcement Learning environment, call
+To use the program to process some input lines, do
 
 ```python
-program.spawn().test(env)
+output_lines = program.run(input_lines)
 ```
 
-where `env` is a `gym` environment. The method returns the rollout and updates `program.avg_score` to be the sum of rewards.
+To use the program as an agent in a Reinforcement Learning environment, do
+
+```python
+env = gym.make('Env-vX')
+agent = program.spawn().rl(env.action_space, env.obs_space)
+obs, info = env.reset()
+terminated = False
+truncated = False
+while not (terminated or truncated):
+    action = agent.predict(obs, deterministic=True)
+    obs, reward, terminated, truncated, info = env.step(action)
+```
 
 See also `examples`.
 
