@@ -88,8 +88,13 @@ class Program():
         Raw results will always be stored in `program.stdout` and `program.exitstatus` attributes
         """
 
-        with chdir(self.workdir):
-            self.stdout, self.exitstatus = self.language.run(self.name, input_lines)
+        try:
+            with chdir(self.workdir):
+                self.stdout, self.exitstatus = self.language.run(self.name, input_lines)
+        except RuntimeError as e:
+            self.exitstatus = 1
+            self.stdout += str(e)
+
         assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
         return self.term.emulate(self.stdout)
     
@@ -102,33 +107,31 @@ class Program():
             process = self.language.spawn(self.name)
         return Agent(self, process, delimiter=delimiter)
 
-    def test(self, test_cases, force=True):
+    def test(self, test_cases):
         """
         Test the program against a list of input output pairs
 
-        If 'force=True', program outputs will be checked even if the exit status is non-zero
         If 'cache=True', all the test logs will be stored in `program.test_runs` attribute
         """
 
         test_runs = []
 
         for input_lines, expected_output_lines in test_cases:
-            test_run = None
-
-            if not self.compile_error:
-                try:
-                    output_lines = self.run(input_lines, force=force)
-                    test_run = TestRun(input_lines, expected_output_lines, 
-                                       output_lines, self.exitstatus,
-                                       correctness(expected_output_lines, output_lines))          
-                except (AssertionError, RuntimeError):
-                    pass
-
-            if not test_run:
+            if self.compile_error:
                 # The program is not runnable
                 test_run = TestRun(input_lines, expected_output_lines, 
                                    self.term.emulate(self.stdout) if self.stdout else [], 
                                    self.exitstatus, 0)
+            else:
+                output_lines = self.run(input_lines, force=True)
+                if self.exitstatus:
+                    # The program crashed
+                    corr = 0
+                else:
+                    # The program ran successfully
+                    corr = correctness(expected_output_lines, output_lines)
+                test_run = TestRun(input_lines, expected_output_lines, 
+                                   output_lines, self.exitstatus, corr) 
 
             test_runs.append(test_run)
 
