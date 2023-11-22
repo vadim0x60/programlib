@@ -64,8 +64,13 @@ class Program():
 
             self.stdout, self.exitstatus = self.language.build(self.name)
 
-        # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
-        self.compile_error = not not self.exitstatus
+            # Please send your opinions on 'not not' vs 'bool()' to dont@vadim.me
+            self.compile_error = not not self.exitstatus
+
+            for artefact in self.language.artefacts:
+                # Compiler returned exit status zero, but a build artefact is missing
+                if not Path(artefact.format(name=self.name)).exists():
+                    self.compile_error = True
 
     def __lt__(self, other):
         return self.name < other.name
