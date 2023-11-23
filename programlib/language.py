@@ -35,6 +35,8 @@ class Language:
             raise RuntimeError('Program did not receive expected input') from e
         except pexpect.exceptions.EOF as e:
             raise RuntimeError('Program exited unexpectedly') from e
+        except pexpect.exceptions.ExceptionPexpect as e:
+            raise RuntimeError('Program failed') from e
     
     def spawn(self, name):
         child = pexpect.spawn(self.run_cmd.format(name=name))
