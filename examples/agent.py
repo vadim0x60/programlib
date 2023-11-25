@@ -1,5 +1,5 @@
 from programlib import Program
-import gym
+import gymnasium as gym
 
 mountain_car_solver = """
 while True:
