@@ -13,7 +13,7 @@ while True:
 
 env = gym.make('MountainCarContinuous-v0', max_episode_steps=500, render_mode='human')
 program = Program(source=mountain_car_solver, language='Python')
-agent = program.spawn().rl(env.action_space, env.observation_space)
+agent = program.spawn()
 
 obs, info = env.reset()
 print(obs, info)

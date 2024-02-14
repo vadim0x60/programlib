@@ -1,16 +1,15 @@
 import gymnasium as gym
 import numpy as np
 
-def decode_action(action_space, action):
+def decode_action(action):
     try:
-        a = eval(action)
-
-        if not isinstance(action_space, gym.spaces.Discrete):
-            return [a]
+        x = np.array(eval(action))
     except SyntaxError:
-        return list(map(eval, action.split(r'[\p\s]+')))
+        x = np.array(map(eval, action.split(r'[\p\s]+')))
+
+    return x.reshape(-1)
     
-def encode_obs(obs_space, obs):
+def encode_obs(obs):
     try:
         obs = obs.tolist()
     except AttributeError:
@@ -39,31 +38,12 @@ class Agent():
 
         self.process.expect(self.delimiter)
         return self.process.before.decode()
-
-    def rl(self, action_space, obs_space):
-        return RLAgent(self, action_space, obs_space)
     
-    def close(self):
-        self.process.close()
-        self.program.exitstatus = self.process.exitstatus
-    
-    def __del__(self):
-        self.close()
-
-class RLAgent():
-    """
-    Reinforcement Learning Agent: represents a running program for control in
-    an OpenAI gym environment. Mimics the interface of a stable-baselines model.
-    """
-
-    def __init__(self, agent, action_space, obs_space) -> None:
-        self.agent = agent
-        self.action_space = action_space
-        self.obs_space = obs_space
-
     def predict(self, obs, deterministic=True):
         """
-        Predict what the next action should be given the current observation
+        Predict what the next action should be given the current observation.
+        Same as act(), but designed to work with reinforcement learning envs.
+        Mimics the interface of a stable-baselines model.
 
         The observations will be passed to stdin of the program, and the action
         will be read from stdout.
@@ -71,8 +51,8 @@ class RLAgent():
         Parameters
         ----------
         obs - the current observation
-        deterministic - whether to return the action or a pseudo-stochastic
-        vector of action probabilities (one-hot)
+        deterministic - should always be set to True, 
+        for compatibility with stable-baselines
 
         Returns (action, state) tuple
         -------
@@ -80,12 +60,17 @@ class RLAgent():
         state - a reference to the process to examine the execution state
         """
 
-        obs_str = encode_obs(self.obs_space, obs)
-        action_str = self.agent.act(obs_str)
-        action = decode_action(self.action_space, action_str)
+        assert deterministic, "Pseudo-stochastic actions not supported"
 
-        if not deterministic:
-            actions_probs = np.zeros(self.action_space.n)
-            actions_probs[action] = 1.0
+        obs_str = encode_obs(obs)
+        action_str = self.act(obs_str)
+        action = decode_action(action_str)
 
-        return action, self.agent.process
+        return action, self.process
+    
+    def close(self):
+        self.process.close()
+        self.program.exitstatus = self.process.exitstatus
+    
+    def __del__(self):
+        self.close()
