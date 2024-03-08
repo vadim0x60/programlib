@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "programlib"
-version = "10.0.0"
+version = "10.0.1"
 description = "Programs as Objects"
 authors = ["Vadim Liventsev <dev@vadim.me>"]
 license = "MIT"
@@ -14,7 +14,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 pexpect = "^4.8.0"
-numpy = "^1.24.2"
+numpy = "^1.22.4"
 pyte = "^0.8.0"
 contextlib-chdir = {version = "^1.0.2", python = "<3.11"}
 
