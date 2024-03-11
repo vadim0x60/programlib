@@ -5,7 +5,7 @@ def decode_action(action):
     try:
         x = np.array(eval(action))
     except SyntaxError:
-        x = np.array(map(eval, action.split(r'[\p\s]+')))
+        x = np.array(list(map(eval, action.split(r'[\p\s]+'))))
 
     return x.reshape(-1)
     
