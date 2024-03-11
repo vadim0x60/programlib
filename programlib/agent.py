@@ -1,6 +1,6 @@
 import gymnasium as gym
 import numpy as np
-from pexpect_util import pexpect_exceptions
+from programlib.pexpectutil import pexpect_exceptions
 
 def decode_action(action):
     try:
