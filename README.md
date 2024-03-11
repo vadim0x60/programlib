@@ -78,7 +78,7 @@ It is needed to clean up the artefacts when the program object is destroyed.
 
 ### Error handling
 
-By default, any errors at build time or run time will lead to an exception being raised, with 2 exceptions:
+By default, any errors at build time or run time will lead to `RuntimeError` being raised, with 2 exceptions:
 - `test` function that catches exceptions during test cases execution and marks these tests as failed.
 - Setting `program.run(force=True)` or `program.test(force=True)` will make `programlib` ignore all errors.
 
