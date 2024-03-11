@@ -3,11 +3,14 @@ import numpy as np
 
 def decode_action(action):
     try:
-        x = np.array(eval(action))
-    except SyntaxError:
-        x = np.array(list(map(eval, action.split(r'[\p\s]+'))))
+        try:
+            x = np.array(eval(action))
+        except SyntaxError:
+            x = np.array(list(map(eval, action.split(r'[\p\s]+'))))
 
-    return x.reshape(-1)
+        return x.reshape(-1)
+    except SyntaxError:
+        return action
     
 def encode_obs(obs):
     try:
