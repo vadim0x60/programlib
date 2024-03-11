@@ -2,6 +2,7 @@ import pexpect
 import shutil
 import os
 from pathlib import Path
+from pexpectutil import pexpect_exceptions
 
 class Language:
     """
@@ -23,20 +24,14 @@ class Language:
         else:
             return '', ''
 
+    @pexpect_exceptions
     def run(self, name, input_lines=[]):
-        try:
-            child = self.spawn(name)
-            for line in input_lines:
-                child.sendline(line)
-            output = child.read()
-            child.close()
-            return output.decode(), child.exitstatus
-        except pexpect.exceptions.TIMEOUT as e:
-            raise RuntimeError('Program did not receive expected input') from e
-        except pexpect.exceptions.EOF as e:
-            raise RuntimeError('Program exited unexpectedly') from e
-        except pexpect.exceptions.ExceptionPexpect as e:
-            raise RuntimeError('Program failed') from e
+        child = self.spawn(name)
+        for line in input_lines:
+            child.sendline(line)
+        output = child.read()
+        child.close()
+        return output.decode(), child.exitstatus
     
     def spawn(self, name):
         child = pexpect.spawn(self.run_cmd.format(name=name))

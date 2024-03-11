@@ -1,5 +1,6 @@
 import gymnasium as gym
 import numpy as np
+from pexpect_util import pexpect_exceptions
 
 def decode_action(action):
     try:
@@ -35,6 +36,7 @@ class Agent():
         
         self.program.stdout = ''
 
+    @pexpect_exceptions
     def act(self, input_lines):
         for line in input_lines:
             self.process.sendline(line)
