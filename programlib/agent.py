@@ -9,9 +9,12 @@ def decode_action(action):
         except SyntaxError:
             x = np.array(list(map(eval, action.split(r'[\p\s]+'))))
 
-        return x.reshape(-1)
+        x = x.reshape(-1)
+        if x.size == 1:
+            x = x[0]
+        return x
     except SyntaxError as e:
-        raise RuntimeError(f'Action {action} not recognized. Please use numbers only') from e
+        raise RuntimeError(f'{action}\nis not a valid action') from e
     
 def encode_obs(obs):
     try:
