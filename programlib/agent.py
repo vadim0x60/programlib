@@ -17,6 +17,9 @@ def decode_action(action):
         raise RuntimeError(f'{action}\nis not a valid action') from e
     
 def encode_obs(obs):
+    if type(obs) == int:
+        return [str(obs)]
+
     try:
         obs = obs.tolist()
     except AttributeError:
