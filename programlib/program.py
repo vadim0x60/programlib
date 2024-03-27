@@ -103,14 +103,14 @@ class Program():
         assert force or not self.exitstatus, f'Exit status {self.exitstatus}'
         return self.term.emulate(self.stdout)
     
-    def spawn(self, delimiter='\n'):
+    def spawn(self, **kwargs):
         """
         Launch the program and get a process object to communicate with it interactively
         """
 
         with chdir(self.workdir):
             process = self.language.spawn(self.name)
-        return Agent(self, process, delimiter=delimiter)
+        return Agent(self, process, **kwargs)
 
     def test(self, test_cases):
         """

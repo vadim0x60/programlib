@@ -1,21 +1,27 @@
 import gymnasium as gym
 import numpy as np
 from programlib.pexpectutil import pexpect_exceptions
+import pexpect
 
-def decode_action(action):
-    try:
+def decode_action(action, mode='auto'):
+    if mode == 'discrete':
+        return int(action)
+    elif mode == 'continuous':
         try:
             x = np.array(eval(action))
         except SyntaxError:
             x = np.array(list(map(eval, action.split(r'[\p\s]+'))))
 
         x = x.reshape(-1)
-        if x.size == 1:
-            x = x[0]
         return x
-    except SyntaxError as e:
-        raise RuntimeError(f'{action}\nis not a valid action') from e
-    
+    elif mode == 'auto':
+        try:
+            return decode_action(action, 'discrete')
+        except ValueError:
+            return decode_action(action, 'continuous')
+    else:
+        raise ValueError(f'Invalid mode: {mode}')
+        
 def encode_obs(obs):
     if type(obs) == int:
         return [str(obs)]
@@ -35,21 +41,15 @@ class Agent():
     Agent: represents a running program that can be interacted with
     """
 
-    def __init__(self, program, process, delimiter='\n'):
+    def __init__(self, program, process, delimiter='\n', action_mode='auto'):
         self.program = program
         self.process = process
         self.delimiter = delimiter
+        self.action_mode = action_mode
         
         self.program.stdout = ''
-
-    @pexpect_exceptions
-    def act(self, input_lines):
-        for line in input_lines:
-            self.process.sendline(line)
-
-        self.process.expect(self.delimiter)
-        return self.process.before.decode()
     
+    @pexpect_exceptions
     def predict(self, obs, deterministic=True):
         """
         Predict what the next action should be given the current observation.
@@ -73,9 +73,22 @@ class Agent():
 
         assert deterministic, "Pseudo-stochastic actions not supported"
 
-        obs_str = encode_obs(obs)
-        action_str = self.act(obs_str)
-        action = decode_action(action_str)
+        for line in encode_obs(obs):
+            self.process.sendline(line)
+ 
+        try:
+            # All valid actions are one-liners, 
+            # so we start decoding as soon as there is a newline
+            self.process.expect(self.delimiter)
+            action_str = self.process.before.decode()
+            action = decode_action(action_str, mode=self.action_mode)
+        except SyntaxError as e:
+            # But if decoding fails, it's useful to record the full output
+            # (often a traceback or error message)
+            self.process.expect([pexpect.EOF, pexpect.TIMEOUT])
+            action_str = self.process.before.decode()
+            
+            raise RuntimeError(f'{action_str}\nis not a valid action') from e
 
         return action, self.process
     

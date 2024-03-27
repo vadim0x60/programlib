@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "programlib"
-version = "10.4.2"
+version = "10.5.0"
 description = "Programs as Objects"
 authors = ["Vadim Liventsev <dev@vadim.me>"]
 license = "MIT"
