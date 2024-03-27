@@ -3,13 +3,11 @@ import gymnasium as gym
 
 mountain_car_solver = """
 for _ in range(10):
-    position = eval(input())
-    velocity = eval(input())
+    position, velocity = map(float, input().split())
     print(1)
 
 while True:
-    position = eval(input())
-    velocity = eval(input())
+    position, velocity = map(float, input().split())
     if abs(velocity) < 0.01:
         print(0)
     elif velocity < 0:

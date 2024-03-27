@@ -34,7 +34,7 @@ def encode_obs(obs):
     if len(obs) == 1:
         obs = obs[0]
 
-    return [str(o) for o in obs]
+    return ' '.join(str(o) for o in obs)
 
 class Agent():
     """
@@ -73,8 +73,7 @@ class Agent():
 
         assert deterministic, "Pseudo-stochastic actions not supported"
 
-        for line in encode_obs(obs):
-            self.process.sendline(line)
+        self.process.sendline(encode_obs(obs))
  
         try:
             # All valid actions are one-liners, 
