@@ -24,7 +24,7 @@ def decode_action(action, mode='auto'):
         
 def encode_obs(obs):
     if type(obs) == int:
-        return [str(obs)]
+        return str(obs)
 
     try:
         obs = obs.tolist()
@@ -80,7 +80,9 @@ class Agent():
             # so we start decoding as soon as there is a newline
             self.process.expect(self.delimiter)
             action_str = self.process.before.decode()
+            print(action_str)
             action = decode_action(action_str, mode=self.action_mode)
+            print(action)
         except SyntaxError as e:
             # But if decoding fails, it's useful to record the full output
             # (often a traceback or error message)
