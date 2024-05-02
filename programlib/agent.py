@@ -4,6 +4,8 @@ from programlib.pexpectutil import pexpect_exceptions
 import pexpect
 
 def decode_action(action, mode='auto'):
+    action = action.strip()
+
     if mode == 'discrete':
         return int(action)
     elif mode == 'box':
