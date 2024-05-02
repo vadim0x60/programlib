@@ -6,7 +6,7 @@ import pexpect
 def decode_action(action, mode='auto'):
     if mode == 'discrete':
         return int(action)
-    elif mode == 'continuous':
+    elif mode == 'box':
         try:
             x = np.array(eval(action))
         except SyntaxError:
@@ -18,7 +18,7 @@ def decode_action(action, mode='auto'):
         try:
             return decode_action(action, 'discrete')
         except ValueError:
-            return decode_action(action, 'continuous')
+            return decode_action(action, 'box')
     else:
         raise ValueError(f'Invalid mode: {mode}')
         

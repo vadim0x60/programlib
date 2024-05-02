@@ -16,9 +16,11 @@ while True:
         print(1)
 """
 
-env = gym.make('MountainCarContinuous-v0', max_episode_steps=500, render_mode='human')
+env = gym.make('MountainCarContinuous-v0', 
+               max_episode_steps=500, 
+               render_mode='human')
 program = Program(source=mountain_car_solver, language='Python')
-agent = program.spawn(action_mode='continuous')
+agent = program.spawn(action_mode='box')
 
 obs, info = env.reset()
 print(obs, info)
