@@ -83,7 +83,7 @@ class Agent():
             self.process.expect(self.delimiter)
             action_str = self.process.before.decode()
             action = decode_action(action_str, mode=self.action_mode)
-        except SyntaxError as e:
+        except (SyntaxError, ValueError) as e:
             # But if decoding fails, it's useful to record the full output
             # (often a traceback or error message)
             self.process.expect([pexpect.EOF, pexpect.TIMEOUT])
