@@ -34,7 +34,7 @@ class Language:
         return output.decode(), child.exitstatus
     
     def spawn(self, name):
-        child = pexpect.spawn(self.run_cmd.format(name=name))
+        child = pexpect.spawn(self.run_cmd.format(name=name), use_poll=True)
         child.setecho(False)
         return child
 
