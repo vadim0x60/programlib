@@ -36,6 +36,7 @@ class Language:
     def spawn(self, name):
         child = pexpect.spawn(self.run_cmd.format(name=name), use_poll=True)
         child.setecho(False)
+        child.delayafterclose = 1
         return child
 
     def write_source(self, name, source):
