@@ -1,4 +1,3 @@
-import gymnasium as gym
 import numpy as np
 from programlib.pexpectutil import pexpect_exceptions
 import pexpect
